@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
+import { Store } from '@ngrx/store';
+import { clearCompletedTodoItems } from 'src/app/actions/todo-item.actions';
+import { AppState } from 'src/app/reducers';
 import { TodoEntryComponent } from '../todo-entry/todo-entry.component';
 
 @Component({
@@ -9,7 +12,7 @@ import { TodoEntryComponent } from '../todo-entry/todo-entry.component';
 })
 export class ActionsComponent implements OnInit {
 
-  constructor(private bottomSheet: MatBottomSheet) { }
+  constructor(private bottomSheet: MatBottomSheet, private store: Store<AppState>) { }
 
   ngOnInit(): void {
   }
@@ -22,4 +25,7 @@ export class ActionsComponent implements OnInit {
     this.bottomSheet.open(TodoEntryComponent, config);
   }
 
+  clearCompleted(): void {
+    this.store.dispatch(clearCompletedTodoItems());
+  }
 }
