@@ -20,6 +20,13 @@ const initialState = adapter.getInitialState();
 
 const reducerFunction = createReducer(
   initialState,
+  on(actions.todoItemAddedSuccessfully, (state, action) => {
+    const tempState = adapter.removeOne(action.oldId, state);
+    return adapter.addOne(action.payload, tempState);
+  }),
+  on(actions.todoItemAddedFailure, (s, a) => adapter.removeOne(a.payload.id, s)),
+  on(actions.loadTodos, actions.loadTodosFailed, () => initialState),
+  on(actions.loadTodosSucceeded, (state, action) => adapter.setAll(action.payload, state)),
   on(actions.todoItemAdded, (state, action) => adapter.addOne(action.payload, state)),
   on(actions.markTodoItemCompleted, actions.markTodoItemIncomplete, (state, action) => adapter.updateOne(
     {
@@ -30,7 +37,8 @@ const reducerFunction = createReducer(
     }, state
   )),
   on(actions.clearCompletedTodoItems, (state) => {
-    const completedIds = state.ids
+    const ids = state.ids as string[];
+    const completedIds = ids
       .map(id => state.entities[id])
       .filter(t => t.completed)
       .map(t => t.id);

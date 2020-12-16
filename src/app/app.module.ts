@@ -31,6 +31,13 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { reducers } from './reducers';
 import { ListComponent } from './components/list/list.component';
+import { LoginComponent } from './components/login/login.component';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
+import { EffectsModule } from '@ngrx/effects';
+import { AuthEffects } from './effects/auth.effects';
+import { ProjectEffects } from './effects/project.effects';
+import { AuthInterceptor } from './services/auth.interceptor';
+import { TodoEffects } from './effects/todo.effects';
 
 @NgModule({
   declarations: [
@@ -42,10 +49,13 @@ import { ListComponent } from './components/list/list.component';
     InboxComponent,
     ProjectsComponent,
     TodoEntryComponent,
-    ListComponent
+    ListComponent,
+    LoginComponent
   ],
   imports: [
+    HttpClientModule,
     StoreModule.forRoot(reducers),
+    EffectsModule.forRoot([AuthEffects, ProjectEffects, TodoEffects]),
     StoreDevtoolsModule.instrument(),
     ReactiveFormsModule,
     MatDialogModule,
@@ -72,7 +82,9 @@ import { ListComponent } from './components/list/list.component';
     MatIconModule,
     MatListModule
   ],
-  providers: [],
+  providers: [{
+    provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
